@@ -1,49 +1,30 @@
-# This project is most likely end of life
+# Zi's Music Player (ZMP)
 
-Mojang Studios
-has [recently announced](https://www.minecraft.net/en-us/article/another-step-towards-vibrant-visuals-for-java-edition)
-that Minecraft will transition its graphics engine from OpenGL to Vulkan.
+A sleek, modern music player for Minecraft built using Fabric and ImGui. Take control of Minecraft's soundtrack with an elegant, fully-featured in-game music player and "Now Playing" HUD overlay!
 
-At the time of writing, the [imgui-java](https://github.com/SpaiR/imgui-java) project used by this template does not yet
-support the Vulkan graphics API (see the pull request [here](https://github.com/SpaiR/imgui-java/pull/120)). As a
-result, this
-project will most likely stop working following the release of Minecraft 26.2.
+## Features
 
-# Fabric ImGui Example Mod
+- **Modern UI**: An intuitive ImGui-based interface to manage your music.
+- **Library Management**: Browse through Ambient tracks, Music Discs, and create Custom Playlists.
+- **Playback Controls**: Play, pause, skip, shuffle, and set tracks to repeat.
+- **HUD Overlay**: A beautiful "Now Playing" overlay with track name, artist, and live playback progress.
+- **Toast Notifications**: Modern toast alerts pop up dynamically whenever a new track starts.
 
-This example contains the following features:
+## Controls
 
-- Basic ImGui/ImPlot Usage
-- Custom Font Rendering
-- Basic Viewport implementation
-- Image loading into ImGui
+- Press **W** to open/close the Music Player interface (can be changed in Keybinds).
+- Click the star icon next to any song to add or remove it from your Playlist.
+- Toggle the HUD, repeat modes, and vanilla delay logic in the "Settings" tab.
 
-## Setup
+## Setup & Building
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the
-IDE that you are using.
+This mod requires **Fabric Loader** and **Fabric API**.
 
-## ImGui usage
-
-You can draw ImGui elements at any point in the render pipeline using this:
-
-```java
-ImGuiImpl.draw(io -> {
-    if (ImGui.begin("Hello World")) {
-        ImGui.end();
-    }
-    ImGui.showDemoWindow();
-});
-```
-
-Keep in mind that ImGui needs to be initialized, so you must not remove the MinecraftClient mixin in the ImGui package.
-
-### Screens
-
-When your rendering has to be found to a screen (e.g. like the ExampleScreen), implement the `RenderInterface` in your
-screen class
-and override the given render functions. That requires the GameRenderer mixin in the ImGui package.
+1. Clone the repository.
+2. Open the project in your IDE of choice (IntelliJ IDEA or Eclipse recommended).
+3. Run `gradlew genSources` to map the source code.
+4. Run `gradlew build` to compile the mod into the `build/libs` directory.
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+This project is licensed under the MIT License. Feel free to use, modify, and distribute the code!

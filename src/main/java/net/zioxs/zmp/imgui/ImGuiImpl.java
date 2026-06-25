@@ -2,7 +2,7 @@
  * This file is part of fabric-imgui-example-mod - https://github.com/florianreuth/fabric-imgui-example-mod
  * by Florian Reuth and contributors
  */
-package de.florianreuth.imguiexample.imgui;
+package net.zioxs.zmp.imgui;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -38,21 +38,25 @@ public final class ImGuiImpl {
         ImPlot.createContext();
 
         final ImGuiIO data = ImGui.getIO();
-        data.setIniFilename("modid.ini"); // TODO; Change this to your modid
+        data.setIniFilename("zmp.ini"); // TODO; Change this to your modid
 
         // If you want to have custom fonts, you can use the following code here
-        //final ImFont defaultFont = loadFont("/fonts/YourFont.ttf", 16);
-        // In ImGui windows, you can set the font like this:
-        //ImGui.pushFont(defaultFont);
-        //ImGui.popFont();
+//        minecraftFont = loadFont("/fonts/minecraft.ttf", 16);
+//        In ImGui windows, you can set the font like this:
+//        ImGui.pushFont(defaultFont);
+//        ImGui.popFont();
 
         data.setConfigFlags(ImGuiConfigFlags.DockingEnable);
+
+        EditorStyle.apply(ImGui.getStyle());
 
         // In case you want to enable Viewports on Windows, replace the line above with this one:
         //data.setConfigFlags(ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.ViewportsEnable);
 
         imGuiImplGlfw.init(handle, true);
         imGuiImplGl3.init();
+
+
     }
 
     public static void beginImGuiRendering() {
@@ -88,8 +92,51 @@ public final class ImGuiImpl {
      * @param pixelSize The desired pixel size of the font.
      * @return The loaded ImFont instance.
      */
-    private static ImFont loadFont(final String path, final int pixelSize) {
-        if (glyphRanges == null) {
+
+    public static ImFont loadFontWithIcons(final String path, final String iconPath, final int pixelSize) {
+        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
+        rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesDefault());
+        rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesCyrillic());
+        rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesJapanese());
+        glyphRanges = rangesBuilder.buildRanges();
+
+        final ImFontConfig config = new ImFontConfig();
+        config.setGlyphRanges(glyphRanges);
+
+        ImFont font;
+        try (final InputStream in = Objects.requireNonNull(ImGuiImpl.class.getResourceAsStream(path))) {
+            final byte[] fontData = IOUtils.toByteArray(in);
+            font = ImGui.getIO().getFonts().addFontFromMemoryTTF(fontData, pixelSize, config);
+        } catch (final IOException e) {
+            config.destroy();
+            throw new UncheckedIOException("Failed to load font from path: " + path, e);
+        }
+        config.destroy();
+
+        // Load Icon Font and Merge
+        final ImFontConfig iconConfig = new ImFontConfig();
+        iconConfig.setMergeMode(true);
+        iconConfig.setGlyphMinAdvanceX((float) pixelSize);
+        // FontAwesome Solid range
+        iconConfig.setGlyphRanges(new short[] { (short) 0xe000, (short) 0xf8ff, 0 });
+
+        try (final InputStream in = Objects.requireNonNull(ImGuiImpl.class.getResourceAsStream(iconPath))) {
+            final byte[] iconData = IOUtils.toByteArray(in);
+            ImGui.getIO().getFonts().addFontFromMemoryTTF(iconData, pixelSize, iconConfig);
+        } catch (final IOException e) {
+            iconConfig.destroy();
+            throw new UncheckedIOException("Failed to load icon font from path: " + iconPath, e);
+        }
+        iconConfig.destroy();
+
+        ImGui.getIO().getFonts().build();
+
+        // Return the merged font (which is the primary one)
+        return font;
+    }
+
+    public static ImFont loadFont(final String path, final int pixelSize) {
+//        if (glyphRanges == null) {
             final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
 
             rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesDefault());
@@ -97,7 +144,7 @@ public final class ImGuiImpl {
             rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesJapanese());
 
             glyphRanges = rangesBuilder.buildRanges();
-        }
+//        }
 
         final ImFontConfig config = new ImFontConfig();
         config.setGlyphRanges(glyphRanges);

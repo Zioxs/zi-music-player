@@ -1,26 +1,26 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "zmp",
 	"version": "${version}",
-	"name": "Example ImGui mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Zi's Music Player",
+	"description": "An elegant music player that lets you browse and manage Minecraft tracks seamlessly.",
 	"authors": [
-		"Me!"
+		"Zioxs"
 	],
 	"contact": {
-		"homepage": "https://github.com/florianreuth/",
-		"sources": "https://github.com/florianreuth/fabric-imgui-example-mod"
+		"homepage": "https://modrinth.com/mod/zi-music-player",
+		"sources": "https://github.com/Zioxs/zi-music-player"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"license": "MIT License",
+	"icon": "assets/zmp/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-          "de.florianreuth.imguiexample.ExampleMod"
+			"net.zioxs.zmp.Zmp"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json"
+		"zmp.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.2",

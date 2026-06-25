@@ -1,6 +1,6 @@
-package de.florianreuth.imguiexample.mixin.imgui;
+package net.zioxs.zmp.mixin.imgui;
 
-import de.florianreuth.imguiexample.imgui.ImGuiImpl;
+import net.zioxs.zmp.imgui.ImGuiImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import com.mojang.blaze3d.platform.Window;

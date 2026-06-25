@@ -1,7 +1,7 @@
-package de.florianreuth.imguiexample.mixin.imgui;
+package net.zioxs.zmp.mixin.imgui;
 
-import de.florianreuth.imguiexample.imgui.ImGuiImpl;
-import de.florianreuth.imguiexample.imgui.RenderInterface;
+import net.zioxs.zmp.imgui.ImGuiImpl;
+import net.zioxs.zmp.imgui.RenderInterface;
 import imgui.ImGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;

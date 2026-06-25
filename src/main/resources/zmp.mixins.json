@@ -1,11 +1,12 @@
 {
 	"required": true,
-	"package": "de.florianreuth.imguiexample.mixin",
+	"package": "net.zioxs.zmp.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"MixinMusicManager",
+		"MixinSoundSystem",
 		"imgui.GameRendererMixin",
-		"imgui.MinecraftMixin",
-		"TitleScreenMixin"
+		"imgui.MinecraftMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
