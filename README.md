@@ -12,7 +12,7 @@ A sleek, modern music player for Minecraft built using Fabric and ImGui. Take co
 
 ## Controls
 
-- Press **W** to open/close the Music Player interface (can be changed in Keybinds).
+- Press **M** to open/close the Music Player interface (can be changed in Keybinds).
 - Click the star icon next to any song to add or remove it from your Playlist.
 - Toggle the HUD, repeat modes, and vanilla delay logic in the "Settings" tab.
 

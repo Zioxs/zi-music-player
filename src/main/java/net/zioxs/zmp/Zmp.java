@@ -2,6 +2,7 @@ package net.zioxs.zmp;
 
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.impl.resource.loader.ResourceManagerHelperImpl;
 import net.minecraft.client.Minecraft;
@@ -27,21 +28,15 @@ public class Zmp implements ModInitializer {
     // That way, it's clear which mod wrote info, warnings, and errors.
     public static final Logger LOGGER = LoggerFactory.getLogger("zpm");
 
-    public static final KeyMapping EXAMPLE_KEYBINDING = new KeyMapping(
-            "key.imguiexample.example_keybinding",
-            GLFW.GLFW_KEY_RIGHT_SHIFT,
-            KeyMapping.Category.MISC
-    );
-
     public final static KeyMapping OPEN_SCREEN = new KeyMapping(
             "key.zmp.open_screen",
             GLFW.GLFW_KEY_M,
             KeyMapping.Category.MISC
     );;
 
-
     @Override
     public void onInitialize() {
+        KeyBindingHelper.registerKeyBinding(OPEN_SCREEN);
         PlaylistManager.load();
 
         ResourceManagerHelperImpl.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
