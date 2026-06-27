@@ -53,9 +53,10 @@ public final class ImGuiImpl {
         // In case you want to enable Viewports on Windows, replace the line above with this one:
         //data.setConfigFlags(ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.ViewportsEnable);
 
-        imGuiImplGlfw.init(handle, true);
-        imGuiImplGl3.init();
-
+//        imGuiImplGlfw.init(handle, true);
+//        imGuiImplGl3.init();
+        invokeBackend(imGuiImplGlfw, "init", new Class<?>[]{ long.class, boolean.class }, handle, false);
+        invokeBackend(imGuiImplGl3, "init", new Class<?>[]{});
 
     }
 
@@ -164,6 +165,36 @@ public final class ImGuiImpl {
 
         ImPlot.destroyContext();
         ImGui.destroyContext();
+    }
+
+    private static boolean invokeBackend(Object backend, String name, Class<?>[] paramTypes, Object... args)
+    {
+        java.lang.reflect.Method method;
+        try
+        {
+            method = backend.getClass().getMethod(name, paramTypes);
+        }
+        catch (NoSuchMethodException absent)
+        {
+            return false;
+        }
+
+        try
+        {
+            method.invoke(backend, args);
+            return true;
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("imgui backend " + name + " is not accessible", e);
+        }
+        catch (java.lang.reflect.InvocationTargetException e)
+        {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException re) throw re;
+            if (cause instanceof Error err) throw err;
+            throw new IllegalStateException("imgui backend " + name + " failed", cause);
+        }
     }
 
 }

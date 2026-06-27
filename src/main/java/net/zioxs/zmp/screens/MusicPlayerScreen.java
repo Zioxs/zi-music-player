@@ -1,23 +1,27 @@
 package net.zioxs.zmp.screens;
 
 import imgui.ImFont;
-import imgui.type.ImString;
-import net.minecraft.client.Minecraft;
-import net.minecraft.sounds.SoundSource;
-import net.zioxs.zmp.imgui.RenderInterface;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImBoolean;
+import imgui.type.ImString;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
+import net.zioxs.zmp.imgui.RenderInterface;
 import net.zioxs.zmp.music.*;
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-import static net.zioxs.zmp.imgui.ImGuiImpl.loadFont;
 import static net.zioxs.zmp.imgui.ImGuiImpl.loadFontWithIcons;
 
 public final class MusicPlayerScreen extends Screen implements RenderInterface {
@@ -30,16 +34,10 @@ public final class MusicPlayerScreen extends Screen implements RenderInterface {
         super(Component.literal("Example Screen"));
         if (mcFont == null)
             mcFont = loadFontWithIcons("/assets/zmp/fonts/minecraft.ttf", "/assets/zmp/fonts/fa-solid-900.ttf", 16);
-
-    }
-
-    @Override
-    protected void init() {
     }
 
     @Override
     public void render(ImGuiIO io) {
-
         int flags = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize;
 
         if (ImGui.begin("Music Player", flags)) {
@@ -247,7 +245,7 @@ public final class MusicPlayerScreen extends Screen implements RenderInterface {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
+    public void renderBackground(@NonNull GuiGraphics guiGraphics, int i, int j, float f) {
     }
 
     @Override
@@ -255,4 +253,106 @@ public final class MusicPlayerScreen extends Screen implements RenderInterface {
         return false; // Only relevant in singleplayer
     }
 
+    @Override
+    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+        ImGui.getIO().setMouseDown(mouseButtonEvent.button(), true);
+        return ImGui.getIO().getWantCaptureMouse() || super.mouseClicked(mouseButtonEvent, bl);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+        ImGui.getIO().setMouseDown(mouseButtonEvent.button(), false);
+        return super.mouseReleased(mouseButtonEvent);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent keyEvent) {
+        // fucking esc
+        if (keyEvent.key() == GLFW.GLFW_KEY_ESCAPE) {
+            return super.keyPressed(keyEvent);
+        }
+
+        ImGuiIO io = ImGui.getIO();
+
+        // 1. Translate the raw GLFW key to an ImGuiKey
+        int imGuiKey = mapGlfwToImGuiKey(keyEvent.key());
+
+        // 2. Only send it to ImGui if it's a valid, recognized key
+        if (imGuiKey != ImGuiKey.None) {
+            io.addKeyEvent(imGuiKey, true);
+        }
+        return ImGui.getIO().getWantCaptureKeyboard() || super.keyPressed(keyEvent);
+    }
+
+    @Override
+    public boolean keyReleased(KeyEvent keyEvent) {
+        ImGuiIO io = ImGui.getIO();
+
+        // 1. Translate the raw GLFW key to an ImGuiKey
+        int imGuiKey = mapGlfwToImGuiKey(keyEvent.key());
+
+        // 2. Only send it to ImGui if it's a valid, recognized key
+        if (imGuiKey != ImGuiKey.None) {
+            io.addKeyEvent(imGuiKey, false);
+        }
+        return super.keyReleased(keyEvent);
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent characterEvent) {
+        ImGuiIO io = ImGui.getIO();
+
+        // 1. Pass the exact Unicode codepoint to ImGui
+        io.addInputCharacter(characterEvent.codepoint());
+
+        // 2. Block Minecraft if ImGui is focused on a text input box
+        return io.getWantCaptureKeyboard() || super.charTyped(characterEvent);
+    }
+
+    @Override
+    public void mouseMoved(double d, double e) {
+        ImGui.getIO().addMousePosEvent((float) d, (float) e);
+        super.mouseMoved(d, e);
+    }
+
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        ImGuiIO io = ImGui.getIO();
+        io.addMouseWheelEvent((float) horizontalAmount, (float) verticalAmount);
+
+        if (io.getWantCaptureMouse()) {
+            return true;
+        }
+
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    private int mapGlfwToImGuiKey(int glfwKey) {
+        // Map A-Z
+        if (glfwKey >= GLFW.GLFW_KEY_A && glfwKey <= GLFW.GLFW_KEY_Z) {
+            return ImGuiKey.A + (glfwKey - GLFW.GLFW_KEY_A);
+        }
+        // Map Numbers 0-9
+        if (glfwKey >= GLFW.GLFW_KEY_0 && glfwKey <= GLFW.GLFW_KEY_9) {
+            return ImGuiKey._0 + (glfwKey - GLFW.GLFW_KEY_0);
+        }
+
+        // Map Special Keys
+        return switch (glfwKey) {
+            case GLFW.GLFW_KEY_SPACE -> ImGuiKey.Space;
+            case GLFW.GLFW_KEY_BACKSPACE -> ImGuiKey.Backspace;
+            case GLFW.GLFW_KEY_ENTER -> ImGuiKey.Enter;
+            case GLFW.GLFW_KEY_ESCAPE -> ImGuiKey.Escape;
+            case GLFW.GLFW_KEY_TAB -> ImGuiKey.Tab;
+            case GLFW.GLFW_KEY_LEFT -> ImGuiKey.LeftArrow;
+            case GLFW.GLFW_KEY_RIGHT -> ImGuiKey.RightArrow;
+            case GLFW.GLFW_KEY_UP -> ImGuiKey.UpArrow;
+            case GLFW.GLFW_KEY_DOWN -> ImGuiKey.DownArrow;
+            case GLFW.GLFW_KEY_DELETE -> ImGuiKey.Delete;
+            case GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT -> ImGuiKey.ModShift;
+            case GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL -> ImGuiKey.ModCtrl;
+            case GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT -> ImGuiKey.ModAlt;
+            // Add any other specific punctuation keys (Comma, Period, etc.) if needed here
+            default -> ImGuiKey.None;
+        };
+        }
 }

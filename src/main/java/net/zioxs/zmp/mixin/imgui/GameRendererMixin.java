@@ -1,5 +1,7 @@
 package net.zioxs.zmp.mixin.imgui;
 
+import imgui.ImGuiIO;
+import imgui.flag.ImGuiConfigFlags;
 import net.zioxs.zmp.imgui.ImGuiImpl;
 import net.zioxs.zmp.imgui.RenderInterface;
 import imgui.ImGui;
